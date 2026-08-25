@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #174bff;
+  --color-brand-2: #2f4acd;
+  --color-navy: #071a46;
+  --color-navy-2: #102266;
+  --color-gold: #f2c94c;
+  --color-tint: #eef2ff;
+  --color-bg: #f7f8fa;
+  --color-ink: #0b1220;
+  --color-muted: #5c6578;
+  --color-line: #e6e8ee;
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.hero-landscape {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 16%);
+}
+
+.plant-slot {
+  left: var(--p-left);
+  bottom: var(--p-bottom);
+  height: var(--p-h);
+}
+
+@media (min-width: 640px) {
+  .plant-slot {
+    left: var(--p-left-sm, var(--p-left));
+    bottom: var(--p-bottom-sm, var(--p-bottom));
+    height: var(--p-h-sm, var(--p-h));
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-landscape {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 22%,
+      #000 48%,
+      #000 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 22%,
+      #000 48%,
+      #000 100%
+    );
+  }
+
+  .plant-slot {
+    left: var(--p-left-lg, var(--p-left-sm, var(--p-left)));
+    bottom: var(--p-bottom-lg, var(--p-bottom-sm, var(--p-bottom)));
+    height: var(--p-h-lg, var(--p-h-sm, var(--p-h)));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .reveal {
+    animation: reveal-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .lift {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .lift:hover {
+    transform: translateY(-4px);
+  }
+
+  @keyframes plant-grow {
+    from {
+      transform: scaleY(0.06);
+      opacity: 0;
+    }
+    to {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes plant-sway {
+    0%,
+    100% {
+      transform: rotate(calc(var(--sway, 4deg) * -1));
+    }
+    50% {
+      transform: rotate(var(--sway, 4deg));
+    }
+  }
+
+  .plant-grow {
+    animation: plant-grow 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .plant-sway {
+    animation: plant-sway var(--wind, 4.8s) ease-in-out
+      calc(var(--delay, 0s) + 0.75s) infinite;
+  }
+}
