@@ -11,7 +11,7 @@ const COMMUNITY_LINKS = [
 export function Footer() {
   return (
     <footer className="bg-navy text-tint">
-      <div className="celo-strip h-[3px] w-full" aria-hidden="true" />
+      <div className="celo-strip h-1.5 w-full" aria-hidden="true" />
       <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-6 py-14 sm:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">

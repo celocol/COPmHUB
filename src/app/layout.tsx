@@ -57,6 +57,7 @@ export default function RootLayout({
             </Script>
           </>
         ) : null}
+        <div className="celo-strip h-1.5 w-full" aria-hidden="true" />
         <AnalyticsListener />
         {children}
       </body>
