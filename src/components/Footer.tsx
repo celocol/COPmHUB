@@ -15,7 +15,10 @@ export function Footer() {
       <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-6 py-14 sm:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="h-[18px] w-[18px] rounded bg-brand" />
+            <span
+              aria-label="Colombia"
+              className="co-flag h-[18px] w-[18px] rounded ring-1 ring-white/20"
+            />
             <span className="font-bold text-white">DigitalCOP</span>
           </div>
           <p className="mt-3 text-xs leading-relaxed text-tint/80">

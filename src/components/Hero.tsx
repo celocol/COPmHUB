@@ -53,7 +53,11 @@ export function Hero() {
               Comprar pesos →
             </CtaLink>
           </div>
-          <p className="mt-6 text-xs font-medium tracking-wide text-muted">
+          <p className="mt-6 flex items-center gap-2 text-xs font-medium tracking-wide text-muted">
+            <span
+              aria-hidden="true"
+              className="co-flag inline-block h-3 w-4 rounded-[2px] ring-1 ring-black/10"
+            />
             LIVE en Colombia
           </p>
         </div>

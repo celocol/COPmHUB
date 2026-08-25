@@ -12,7 +12,10 @@ export function Nav() {
           section="nav"
           className="flex items-center gap-2 font-extrabold tracking-tight text-ink"
         >
-          <span className="h-6 w-6 rounded-md bg-brand" />
+          <span
+            aria-label="Colombia"
+            className="co-flag h-6 w-6 rounded-md ring-1 ring-black/5"
+          />
           DigitalCOP
         </CtaLink>
         <div className="flex flex-wrap items-center justify-end gap-x-6 gap-y-1 text-sm font-medium text-muted">

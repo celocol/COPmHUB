@@ -19,7 +19,22 @@
   --color-celo-orange: #ff9a51;
   --color-celo-pink: #ffa3eb;
   --color-celo-purple: #b490ff;
+  --color-co-yellow: #fcd116;
+  --color-co-blue: #003893;
+  --color-co-red: #ce1126;
   --font-sans: var(--font-geist-sans);
+}
+
+.co-flag {
+  background: linear-gradient(
+    to bottom,
+    var(--color-co-yellow) 0%,
+    var(--color-co-yellow) 50%,
+    var(--color-co-blue) 50%,
+    var(--color-co-blue) 75%,
+    var(--color-co-red) 75%,
+    var(--color-co-red) 100%
+  );
 }
 
 .celo-band {
