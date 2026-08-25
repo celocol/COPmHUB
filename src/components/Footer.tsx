@@ -11,7 +11,7 @@ const COMMUNITY_LINKS = [
 export function Footer() {
   return (
     <footer className="bg-navy text-tint">
-      <div className="celo-strip h-1.5 w-full" aria-hidden="true" />
+      <div className="celo-strip h-2 w-full" aria-hidden="true" />
       <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-6 py-14 sm:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
@@ -121,18 +121,24 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-6 text-xs text-tint/70 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            Mantenido por la comunidad{" "}
-            <CtaLink
-              href={COMMUNITY.web}
-              label={COMMUNITY.name}
-              event="outbound_click"
-              section="footer"
-              className="font-semibold text-white hover:underline"
-            >
-              {COMMUNITY.name}
-            </CtaLink>
-            .
+          <p className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="inline-block h-2 w-2 rounded-full bg-celo-yellow"
+            />
+            <span>
+              Mantenido por la comunidad{" "}
+              <CtaLink
+                href={COMMUNITY.web}
+                label={COMMUNITY.name}
+                event="outbound_click"
+                section="footer"
+                className="font-semibold text-white hover:underline"
+              >
+                {COMMUNITY.name}
+              </CtaLink>
+              .
+            </span>
           </p>
           <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
             {COMMUNITY_LINKS.map((link) => (

@@ -1,6 +1,6 @@
 import { CtaLink } from "@/components/CtaLink";
 import { HeroLandscape } from "@/components/HeroLandscape";
-import { PRODUCT_URLS } from "@/lib/site";
+import { COMMUNITY, PRODUCT_URLS } from "@/lib/site";
 
 export function Hero() {
   return (
@@ -8,9 +8,21 @@ export function Hero() {
       <HeroLandscape />
       <div className="relative z-10 mx-auto max-w-6xl px-6 pt-10 pb-44 sm:pb-52 md:pb-56 lg:flex lg:min-h-[calc(100svh-4.5rem)] lg:items-start lg:px-6 lg:pt-16 lg:pb-8">
         <div className="reveal w-full max-w-xl">
-          <span className="inline-block rounded-full border border-line bg-bg px-3 py-1 text-xs font-medium uppercase tracking-wide text-muted">
-            Pesos digitales · Colombia
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-block rounded-full border border-line bg-bg px-3 py-1 text-xs font-medium uppercase tracking-wide text-muted">
+              Pesos digitales · Colombia
+            </span>
+            <CtaLink
+              href={COMMUNITY.web}
+              label="Comunidad Celo Colombia"
+              event="outbound_click"
+              section="hero"
+              className="inline-flex items-center gap-1.5 rounded-full bg-celo-yellow px-3 py-1 text-xs font-bold uppercase tracking-wide text-celo-fig transition-transform hover:scale-[1.02]"
+            >
+              <span aria-hidden="true">●</span>
+              Comunidad Celo Colombia
+            </CtaLink>
+          </div>
           <h1 className="mt-6 text-4xl font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.25rem]">
             Hub de pesos digitales en Colombia.
           </h1>

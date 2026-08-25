@@ -11,12 +11,19 @@
   --color-ink: #0b1220;
   --color-muted: #5c6578;
   --color-line: #e6e8ee;
+  --color-celo-yellow: #fcff52;
+  --color-celo-fig: #1e002b;
+  --color-celo-sand: #e7e3d4;
   --color-celo-blue: #7cc0ff;
   --color-celo-green: #56df7c;
   --color-celo-orange: #ff9a51;
   --color-celo-pink: #ffa3eb;
   --color-celo-purple: #b490ff;
   --font-sans: var(--font-geist-sans);
+}
+
+.celo-band {
+  background: var(--color-celo-yellow);
 }
 
 .celo-strip {
