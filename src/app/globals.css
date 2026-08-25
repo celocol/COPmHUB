@@ -7,10 +7,10 @@
   --color-navy-2: #102266;
   --color-gold: #f2c94c;
   --color-tint: #eef2ff;
-  --color-bg: #f7f8fa;
-  --color-ink: #0b1220;
+  --color-bg: #fcf6f1;
+  --color-ink: #1e002b;
   --color-muted: #5c6578;
-  --color-line: #e6e8ee;
+  --color-line: #ebe4dc;
   --color-celo-yellow: #fcff52;
   --color-celo-fig: #1e002b;
   --color-celo-sand: #e7e3d4;
@@ -24,6 +24,21 @@
 
 .celo-band {
   background: var(--color-celo-yellow);
+}
+
+.celo-mark {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 55%,
+    var(--color-celo-yellow) 55%,
+    var(--color-celo-yellow) 92%,
+    transparent 92%
+  );
+  padding: 0 0.15em;
+  color: var(--color-celo-fig);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .celo-strip {

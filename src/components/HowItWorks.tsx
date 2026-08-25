@@ -20,7 +20,7 @@ export function HowItWorks() {
   return (
     <section
       id="como-funciona"
-      className="border-t border-line bg-white px-6 py-20 sm:py-28"
+      className="border-t border-line bg-celo-sand px-6 py-20 sm:py-28"
     >
       <div className="relative z-10 mx-auto max-w-6xl">
         <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
@@ -34,7 +34,7 @@ export function HowItWorks() {
           {steps.map((step, index) => (
             <div
               key={step.n}
-              className="reveal rounded-[20px] border border-line bg-bg p-6"
+              className="reveal rounded-[20px] border border-line bg-white p-6"
               style={{ animationDelay: `${index * 0.07}s` }}
             >
               <span className="text-sm font-bold text-brand">{step.n}</span>

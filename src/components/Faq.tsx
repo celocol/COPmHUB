@@ -9,7 +9,7 @@ export function Faq() {
   return (
     <section
       id="faq"
-      className="border-t border-line bg-white px-6 py-20 sm:py-28"
+      className="border-t border-line bg-bg px-6 py-20 sm:py-28"
     >
       <div className="relative z-10 mx-auto max-w-3xl">
         <h2 className="text-3xl font-extrabold tracking-tight text-ink">

@@ -4,7 +4,7 @@ import { COMMUNITY, PRODUCT_URLS } from "@/lib/site";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section className="relative overflow-hidden bg-bg">
       <HeroLandscape />
       <div className="relative z-10 mx-auto max-w-6xl px-6 pt-10 pb-44 sm:pb-52 md:pb-56 lg:flex lg:min-h-[calc(100svh-4.5rem)] lg:items-start lg:px-6 lg:pt-16 lg:pb-8">
         <div className="reveal w-full max-w-xl">
@@ -23,8 +23,9 @@ export function Hero() {
               Comunidad Celo Colombia
             </CtaLink>
           </div>
-          <h1 className="mt-6 text-4xl font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.25rem]">
-            Hub de pesos digitales en Colombia.
+          <h1 className="mt-6 text-4xl font-extrabold leading-[1.15] tracking-tight text-ink sm:text-5xl lg:text-[3.25rem]">
+            Hub de <span className="celo-mark">pesos digitales</span> en
+            Colombia.
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-muted">
             Billetera, marketplace y rendimiento en pesos digitales. Elige la
