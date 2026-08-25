@@ -1,0 +1,119 @@
+import { CtaLink } from "@/components/CtaLink";
+import { serviceLinkProps, services } from "@/lib/services";
+
+const doors = services.filter((service) =>
+  ["tucop", "cards", "neeru"].includes(service.id),
+);
+
+function StatusPill({ partner }: { partner?: boolean }) {
+  return (
+    <span
+      className={
+        partner
+          ? "rounded-full bg-tint px-2 py-0.5 text-[10px] font-bold tracking-wide text-brand-2"
+          : "rounded-full bg-[#eef8ee] px-2 py-0.5 text-[10px] font-bold tracking-wide text-[#137211]"
+      }
+    >
+      {partner ? "PARTNER" : "LIVE"}
+    </span>
+  );
+}
+
+export function Services() {
+  return (
+    <section id="servicios" className="border-t border-line px-6 py-20 sm:py-28">
+      <div className="relative z-10 mx-auto max-w-6xl">
+        <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
+          Tres apps para tus pesos digitales
+        </h2>
+        <p className="mt-3 max-w-xl text-muted">
+          Guarda en TuCop, compra en el marketplace o explora rendimiento en
+          Neeru.
+        </p>
+
+        <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+          {doors.map((service, index) => {
+            const link = serviceLinkProps(service);
+            const outbound = link.href ?? service.href;
+            return (
+              <div
+                key={service.id}
+                className={
+                  "lift reveal flex flex-col justify-between rounded-[20px] border bg-white p-6" +
+                  (service.id === "tucop"
+                    ? " border-brand/25"
+                    : " border-line")
+                }
+                style={{ animationDelay: `${index * 0.07}s` }}
+              >
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {service.tag ? (
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-brand">
+                        {service.tag}
+                      </span>
+                    ) : null}
+                    <StatusPill partner={service.partner} />
+                  </div>
+                  <h3 className="mt-4 text-xl font-extrabold tracking-tight text-ink">
+                    {service.name}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {service.description}
+                  </p>
+                  {service.socials ? (
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      {service.socials.map((item) => (
+                        <CtaLink
+                          key={item.label}
+                          href={item.href}
+                          label={item.label}
+                          event="outbound_click"
+                          section="servicios"
+                          product={service.id}
+                          className="text-xs font-semibold text-muted transition-colors hover:text-brand"
+                        >
+                          {item.label}
+                        </CtaLink>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="mt-6 flex flex-wrap items-center gap-4">
+                  {link.isLink ? (
+                    <CtaLink
+                      href={outbound}
+                      label={service.cta}
+                      event="product_card_click"
+                      section="servicios"
+                      product={service.id}
+                      className={
+                        service.id === "tucop"
+                          ? "inline-flex rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-white"
+                          : "text-sm font-bold text-brand"
+                      }
+                    >
+                      {service.cta} →
+                    </CtaLink>
+                  ) : null}
+                  {service.learnMoreHref ? (
+                    <CtaLink
+                      href={service.learnMoreHref}
+                      label={`Cómo funciona ${service.name}`}
+                      event="landing_cta_click"
+                      section="servicios"
+                      product={service.id}
+                      className="text-sm font-semibold text-muted hover:text-ink"
+                    >
+                      Cómo funciona
+                    </CtaLink>
+                  ) : null}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
