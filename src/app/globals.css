@@ -11,7 +11,23 @@
   --color-ink: #0b1220;
   --color-muted: #5c6578;
   --color-line: #e6e8ee;
+  --color-celo-blue: #7cc0ff;
+  --color-celo-green: #56df7c;
+  --color-celo-orange: #ff9a51;
+  --color-celo-pink: #ffa3eb;
+  --color-celo-purple: #b490ff;
   --font-sans: var(--font-geist-sans);
+}
+
+.celo-strip {
+  background: linear-gradient(
+    90deg,
+    var(--color-celo-blue) 0%,
+    var(--color-celo-green) 25%,
+    var(--color-celo-orange) 50%,
+    var(--color-celo-pink) 75%,
+    var(--color-celo-purple) 100%
+  );
 }
 
 body {

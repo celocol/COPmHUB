@@ -1,9 +1,17 @@
 import { CtaLink } from "@/components/CtaLink";
-import { CLUSTER_PAGES, LEGAL_PAGES, PRODUCT_URLS } from "@/lib/site";
+import { CLUSTER_PAGES, COMMUNITY, LEGAL_PAGES, PRODUCT_URLS } from "@/lib/site";
+
+const COMMUNITY_LINKS = [
+  { href: COMMUNITY.web, label: "Web" },
+  { href: COMMUNITY.twitter, label: "X" },
+  { href: COMMUNITY.instagram, label: "Instagram" },
+  { href: COMMUNITY.telegram, label: "Telegram" },
+] as const;
 
 export function Footer() {
   return (
     <footer className="bg-navy text-tint">
+      <div className="celo-strip h-[3px] w-full" aria-hidden="true" />
       <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-6 py-14 sm:grid-cols-4">
         <div>
           <div className="flex items-center gap-2">
@@ -92,7 +100,7 @@ export function Footer() {
         </div>
         <div>
           <p className="text-xs font-bold uppercase tracking-wide text-white">
-            Legal y contacto
+            Legal
           </p>
           <ul className="mt-3 space-y-2 text-xs">
             {LEGAL_PAGES.map((page) => (
@@ -108,22 +116,39 @@ export function Footer() {
                 </CtaLink>
               </li>
             ))}
-            <li>
-              <CtaLink
-                href={PRODUCT_URLS.communityTelegram}
-                label="Comunidad Celo Colombia"
-                event="outbound_click"
-                section="footer"
-                className="hover:text-white"
-              >
-                Comunidad Celo Colombia
-              </CtaLink>
-            </li>
           </ul>
-          <p className="mt-4 text-[11px] leading-relaxed text-tint/70">
-            Telegram es un canal de comunidad, no el soporte de DigitalCOP. Para
-            un producto, usa el canal de esa app.
+        </div>
+      </div>
+      <div className="border-t border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-6 text-xs text-tint/70 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            Mantenido por la comunidad{" "}
+            <CtaLink
+              href={COMMUNITY.web}
+              label={COMMUNITY.name}
+              event="outbound_click"
+              section="footer"
+              className="font-semibold text-white hover:underline"
+            >
+              {COMMUNITY.name}
+            </CtaLink>
+            .
           </p>
+          <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            {COMMUNITY_LINKS.map((link) => (
+              <li key={link.href}>
+                <CtaLink
+                  href={link.href}
+                  label={`Celo Colombia ${link.label}`}
+                  event="outbound_click"
+                  section="footer"
+                  className="hover:text-white"
+                >
+                  {link.label}
+                </CtaLink>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>

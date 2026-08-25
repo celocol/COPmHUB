@@ -39,6 +39,16 @@ export function organizationJsonLd() {
     url: SITE_URL,
     description:
       "Hub de servicios de pesos digitales (COPm) sobre Celo en Colombia.",
+    parentOrganization: {
+      "@type": "Organization",
+      name: "Celo Colombia",
+      url: "https://celocolombia.org",
+      sameAs: [
+        "https://x.com/Celo_Col",
+        "https://www.instagram.com/celocolombia/",
+        "https://t.me/CeloCol",
+      ],
+    },
   };
 }
 

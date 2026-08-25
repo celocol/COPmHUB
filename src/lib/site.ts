@@ -14,7 +14,14 @@ export const PRODUCT_URLS = {
   cards: "https://cards.digitalcop.shop",
   copby: "https://copby.digitalcop.shop",
   neeru: "https://neerufinance.xyz",
-  communityTelegram: "https://t.me/celocol",
+} as const;
+
+export const COMMUNITY = {
+  name: "Celo Colombia",
+  web: "https://celocolombia.org",
+  twitter: "https://x.com/Celo_Col",
+  instagram: "https://www.instagram.com/celocolombia/",
+  telegram: "https://t.me/CeloCol",
 } as const;
 
 export const NAV_LINKS = [
