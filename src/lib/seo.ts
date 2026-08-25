@@ -46,6 +46,7 @@ export function organizationJsonLd() {
       sameAs: [
         "https://x.com/Celo_Col",
         "https://www.instagram.com/celocolombia/",
+        "https://www.tiktok.com/@celocol",
         "https://t.me/CeloCol",
       ],
     },

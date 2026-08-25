@@ -5,6 +5,7 @@ const COMMUNITY_LINKS = [
   { href: COMMUNITY.web, label: "Web" },
   { href: COMMUNITY.twitter, label: "X" },
   { href: COMMUNITY.instagram, label: "Instagram" },
+  { href: COMMUNITY.tiktok, label: "TikTok" },
   { href: COMMUNITY.telegram, label: "Telegram" },
 ] as const;
 

@@ -21,6 +21,7 @@ export const COMMUNITY = {
   web: "https://celocolombia.org",
   twitter: "https://x.com/Celo_Col",
   instagram: "https://www.instagram.com/celocolombia/",
+  tiktok: "https://www.tiktok.com/@celocol",
   telegram: "https://t.me/CeloCol",
 } as const;
 
