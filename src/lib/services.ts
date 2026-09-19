@@ -57,6 +57,7 @@ export const services: Service[] = [
     href: "https://copby.digitalcop.shop",
     cta: "Cambiar dólares a pesos",
     learnMoreHref: "/cambiar-usd-a-cop",
+    tag: "Cambio",
     status: "live",
     external: true,
   },

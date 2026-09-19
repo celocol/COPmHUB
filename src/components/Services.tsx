@@ -2,7 +2,7 @@ import { CtaLink } from "@/components/CtaLink";
 import { serviceLinkProps, services } from "@/lib/services";
 
 const doors = services.filter((service) =>
-  ["tucop", "cards", "neeru"].includes(service.id),
+  ["tucop", "cards", "copby", "neeru"].includes(service.id),
 );
 
 function StatusPill({ partner }: { partner?: boolean }) {
@@ -24,14 +24,14 @@ export function Services() {
     <section id="servicios" className="border-t border-line px-6 py-20 sm:py-28">
       <div className="relative z-10 mx-auto max-w-6xl">
         <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-          Tres apps para tus pesos digitales
+          Cuatro apps para tus pesos digitales
         </h2>
         <p className="mt-3 max-w-xl text-muted">
-          Guarda en TuCop, compra en el marketplace o explora rendimiento en
-          Neeru.
+          Guarda en TuCop, compra en el marketplace, cambia dólares con COP By
+          o explora rendimiento en Neeru.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {doors.map((service, index) => {
             const link = serviceLinkProps(service);
             const outbound = link.href ?? service.href;
