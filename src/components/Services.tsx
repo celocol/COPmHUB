@@ -113,6 +113,19 @@ export function Services() {
             );
           })}
         </div>
+
+        <p className="mt-10 text-sm text-muted">
+          ¿Tu proyecto usa COPm?{" "}
+          <CtaLink
+            href="/ecosystem"
+            label="Ecosistema COPm"
+            event="landing_cta_click"
+            section="servicios"
+            className="font-semibold text-brand hover:underline"
+          >
+            Ver el ecosistema y cómo listarlo →
+          </CtaLink>
+        </p>
       </div>
     </section>
   );

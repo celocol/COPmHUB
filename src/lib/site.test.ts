@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { HOME_FAQ } from "./faq";
-import { CLUSTER_PAGES, INDEXABLE_PATHS, LEGAL_PAGES } from "./site";
+import {
+  CLUSTER_PAGES,
+  ECOSYSTEM_PAGE,
+  INDEXABLE_PATHS,
+  LEGAL_PAGES,
+} from "./site";
 
 describe("SEO cluster", () => {
-  it("includes home, intent pages and legal URLs", () => {
+  it("includes home, intent pages, ecosystem and legal URLs", () => {
     expect(INDEXABLE_PATHS).toEqual([
       "/",
       "/que-es-copm",
@@ -11,10 +16,17 @@ describe("SEO cluster", () => {
       "/invertir-pesos-digitales",
       "/carry-trade-peso-colombiano",
       "/crypto-colombia",
+      "/ecosystem",
       "/nosotros",
       "/terminos",
       "/privacidad",
     ]);
+  });
+
+  it("documents the ecosystem listing page", () => {
+    expect(ECOSYSTEM_PAGE.path).toBe("/ecosystem");
+    expect(ECOSYSTEM_PAGE.title.length).toBeGreaterThan(8);
+    expect(ECOSYSTEM_PAGE.description.length).toBeGreaterThan(40);
   });
 
   it("gives every cluster page a title, description and nav label", () => {

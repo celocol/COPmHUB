@@ -1,5 +1,11 @@
 import { CtaLink } from "@/components/CtaLink";
-import { CLUSTER_PAGES, COMMUNITY, LEGAL_PAGES, PRODUCT_URLS } from "@/lib/site";
+import {
+  CLUSTER_PAGES,
+  COMMUNITY,
+  ECOSYSTEM_PAGE,
+  LEGAL_PAGES,
+  PRODUCT_URLS,
+} from "@/lib/site";
 
 const COMMUNITY_LINKS = [
   { href: COMMUNITY.web, label: "Web" },
@@ -98,6 +104,17 @@ export function Footer() {
                 className="hover:text-white"
               >
                 COP By
+              </CtaLink>
+            </li>
+            <li>
+              <CtaLink
+                href={ECOSYSTEM_PAGE.path}
+                label={ECOSYSTEM_PAGE.title}
+                event="nav_click"
+                section="footer"
+                className="hover:text-white"
+              >
+                {ECOSYSTEM_PAGE.title}
               </CtaLink>
             </li>
           </ul>

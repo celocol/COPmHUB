@@ -27,6 +27,7 @@ export const COMMUNITY = {
 
 export const NAV_LINKS = [
   { href: "/#servicios", label: "Apps", event: "nav_click" },
+  { href: "/ecosystem", label: "Ecosistema", event: "nav_click" },
   { href: "/#como-funciona", label: "Cómo funciona", event: "nav_click" },
   { href: "/#faq", label: "FAQ", event: "nav_click" },
 ] as const;
@@ -90,9 +91,17 @@ export const LEGAL_PAGES = [
   },
 ] as const;
 
+export const ECOSYSTEM_PAGE = {
+  path: "/ecosystem",
+  title: "Ecosistema COPm",
+  description:
+    "Proyectos en producción que usan pesos digitales (COPm) sobre Celo. Para listar el tuyo, abre un PR.",
+} as const;
+
 export const INDEXABLE_PATHS = [
   "/",
   ...CLUSTER_PAGES.map((page) => page.path),
+  ECOSYSTEM_PAGE.path,
   ...LEGAL_PAGES.map((page) => page.path),
 ] as const;
 
