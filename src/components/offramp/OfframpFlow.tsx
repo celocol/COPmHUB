@@ -8,6 +8,13 @@ import {
   SESSION_EXPIRED_CODE,
   offrampErrorMessage,
 } from "@/lib/offramp/messages";
+import { normalizeBreBKey } from "@/lib/offramp/breb";
+import {
+  embeddedKycUrl,
+  embeddedTosUrl,
+  isKycFinished,
+  isTosAccepted,
+} from "@/lib/offramp/embed";
 import { markOfframpPopupSeen } from "@/components/offramp/popupStorage";
 import {
   readSessionToken,
@@ -119,12 +126,66 @@ export function OfframpFlow({
     (status?.state === "destination_verified" && !status.offramp);
   useEffect(() => {
     if (!waiting) return;
-    const timer = window.setInterval(() => {
+    const refresh = () => {
       if (document.visibilityState !== "visible") return;
       call<Status>("GET", "/me").then(setStatus, () => {});
-    }, 8000);
-    return () => window.clearInterval(timer);
+    };
+    const timer = window.setInterval(refresh, 5000);
+    // Bridge opens in another tab. Coming back to this one should show the
+    // result at once instead of after the next tick.
+    document.addEventListener("visibilitychange", refresh);
+    window.addEventListener("focus", refresh);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+    };
   }, [waiting, call]);
+
+  // Set once the person opens a Bridge page in another tab, so the KYC step
+  // can say it is waiting for Bridge instead of looking stuck.
+  const [openedBridge, setOpenedBridge] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const checkNow = () => {
+    setChecking(true);
+    call<Status>("GET", "/me")
+      .then(setStatus, () => {})
+      .finally(() => setChecking(false));
+  };
+
+  // Bridge's pages are framed in the KYC step and report back with
+  // postMessage. The flags move the step on at once; TuCOPRamp, reading
+  // Bridge, still decides the real status on the next poll.
+  const [termsAcceptedHere, setTermsAcceptedHere] = useState(false);
+  const [identitySentHere, setIdentitySentHere] = useState(false);
+  const inKyc = status?.state === "kyc_pending";
+  useEffect(() => {
+    if (!inKyc) return;
+    const onMessage = (event: MessageEvent) => {
+      if (isTosAccepted(event)) {
+        setTermsAcceptedHere(true);
+        track("offramp_terms_accepted", { section: "offramp" });
+      } else if (isKycFinished(event)) {
+        setIdentitySentHere(true);
+        track("offramp_identity_submitted", { section: "offramp" });
+      } else {
+        return;
+      }
+      call<Status>("GET", "/me").then(setStatus, () => {});
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [inKyc, call]);
+
+  // Bridge sends the person back to this page in the tab it opened, which
+  // has no session. Recognise that landing so it can point them back.
+  const [returnedFromBridge, setReturnedFromBridge] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (["inquiry-id", "inquiry_id", "signed_agreement_id"].some((key) => params.has(key))) {
+      queueMicrotask(() => setReturnedFromBridge(true));
+    }
+  }, []);
 
   const run = useCallback(async (action: () => Promise<void>) => {
     setBusy(true);
@@ -184,13 +245,14 @@ export function OfframpFlow({
 
   const saveKey = () =>
     run(async () => {
-      // The Bre-B directory answers after a wait; say so, or it looks stuck.
-      setNotice("Estamos validando tu llave con el banco. Puede tardar hasta un minuto y medio: no cierres esta página.");
+      // The Bre-B directory answers after a wait; the step shows a moving
+      // panel while `busy` so it does not look stuck.
+      const key = normalizeBreBKey(breBKey);
+      setBreBKey(key);
       const next = await call<Status>("POST", "/destination", {
-        bre_b_key: breBKey,
+        bre_b_key: key,
       });
       setBreBKey("");
-      setNotice(null);
       advance(next);
     });
 
@@ -226,6 +288,11 @@ export function OfframpFlow({
     setStatus(SIGNED_OUT);
   };
 
+  const identityDone =
+    status?.kyc_status === "approved" || status?.kyc_status === "active";
+  const termsDone = status?.tos_status === "approved" || termsAcceptedHere;
+  const identityReviewing = status?.kyc_status === "under_review";
+
   if (!status) {
     return (
       <div className="rounded-[20px] border border-line bg-white p-6 sm:p-8">
@@ -258,6 +325,17 @@ export function OfframpFlow({
             }}
           >
             {heading("Empieza con tu correo")}
+            {returnedFromBridge ? (
+              <div
+                className="mt-4 max-w-prose rounded-2xl border border-[#137211]/30 bg-[#eef8ee] p-4 text-sm leading-relaxed text-ink"
+                role="status"
+              >
+                <strong>Recibimos tu paso en Bridge.</strong> Vuelve a la
+                pestaña donde empezaste tu preinscripción: allí el formulario
+                avanza solo en unos segundos. Si ya la cerraste, escribe tu
+                correo aquí y continúas donde ibas.
+              </div>
+            ) : null}
             <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted">
               Te enviamos un código para confirmar que es tuyo. Si ya empezaste
               tu preinscripción, con el mismo correo la retomas donde la
@@ -401,50 +479,91 @@ export function OfframpFlow({
           <>
             {heading("Verifica tu identidad")}
             <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted">
-              Son dos pasos en la página segura de Bridge, nuestro proveedor.
-              Ten a la mano tu documento. Puedes cerrar esta página y volver
-              después con tu correo: tu avance queda guardado.
+              Son dos pasos con Bridge, nuestro proveedor, y los haces aquí
+              mismo. Ten a la mano tu documento. Puedes cerrar esta página y
+              volver después con tu correo: tu avance queda guardado.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              {status.kyc_link ? (
-                <a
-                  href={status.kyc_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={primaryClass}
-                >
-                  Verificar identidad
-                </a>
-              ) : null}
-              {status.tos_link && status.tos_status !== "approved" ? (
-                <a
-                  href={status.tos_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={secondaryClass}
-                >
-                  Aceptar términos
-                </a>
-              ) : null}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+              <StatusLine label="Términos" done={termsDone} />
               <StatusLine
                 label="Identidad"
-                done={
-                  status.kyc_status === "approved" ||
-                  status.kyc_status === "active"
-                }
-              />
-              <StatusLine
-                label="Términos"
-                done={status.tos_status === "approved"}
+                done={identityDone}
+                reviewing={identityReviewing || identitySentHere}
               />
             </div>
-            <p className="mt-4 text-sm text-muted" role="status">
-              {status.kyc_status === "under_review"
-                ? "En revisión. Esta página se actualiza sola cuando haya respuesta."
-                : "Esta página se actualiza sola cuando termines."}
-            </p>
+
+            {!termsDone && status.tos_link ? (
+              <BridgeStep
+                title="1. Acepta los términos de Bridge"
+                body="La página de Bridge está en inglés. Al pulsar “Accept” aceptas sus Términos de Servicio y su Política de Privacidad."
+                frameTitle="Términos de Bridge"
+                src={embeddedTosUrl(status.tos_link)}
+                link={status.tos_link}
+                linkLabel="Aceptar términos"
+                help="¿No carga?"
+                height={480}
+                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                onOpenTab={() => setOpenedBridge(true)}
+              />
+            ) : null}
+
+            {termsDone &&
+            !identityDone &&
+            !identityReviewing &&
+            !identitySentHere &&
+            status.kyc_link ? (
+              <BridgeStep
+                title="2. Verifica tu identidad"
+                body="Bridge te pide una foto de tu documento y una selfie. Cuando el navegador pregunte, permite el uso de la cámara."
+                frameTitle="Verificación de identidad de Bridge"
+                src={embeddedKycUrl(status.kyc_link, window.location.origin)}
+                link={status.kyc_link}
+                linkLabel="Verificar identidad"
+                help="¿No carga o no te deja usar la cámara?"
+                height={680}
+                allow="camera"
+                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation"
+                onOpenTab={() => setOpenedBridge(true)}
+              />
+            ) : null}
+
+            {identityDone && termsDone ? (
+              <WaitPanel
+                title="Ya casi: estamos habilitando tu cuenta"
+                body="Tu identidad y los términos están listos. Bridge está terminando de activar tu cuenta para Colombia; suele tardar menos de un minuto. No cierres esta página: avanza sola."
+              />
+            ) : identityReviewing || identitySentHere ? (
+              <WaitPanel
+                title="Bridge está revisando tu identidad"
+                body="Puede tardar unos minutos. Puedes dejar esta página abierta, avanza sola, o cerrarla y volver más tarde con tu correo."
+              />
+            ) : openedBridge ? (
+              <WaitPanel
+                title="Esperando tu verificación en Bridge"
+                body="Completa los pasos en la pestaña de Bridge que se abrió. Cuando termines, vuelve aquí: esta página se actualiza sola en unos segundos. La pestaña de Bridge la puedes cerrar."
+              />
+            ) : null}
+            <div className="mt-4 flex flex-wrap gap-3">
+              {openedBridge || identityReviewing || identitySentHere || (identityDone && termsDone) ? (
+                <button
+                  type="button"
+                  onClick={checkNow}
+                  disabled={checking}
+                  className={secondaryClass}
+                >
+                  {checking ? "Revisando..." : "Ya terminé, revisar ahora"}
+                </button>
+              ) : null}
+              {identitySentHere && !identityReviewing && !identityDone ? (
+                <button
+                  type="button"
+                  onClick={() => setIdentitySentHere(false)}
+                  className={secondaryClass}
+                >
+                  Abrir la verificación otra vez
+                </button>
+              ) : null}
+            </div>
           </>
         ) : null}
 
@@ -467,12 +586,15 @@ export function OfframpFlow({
                   className={inputClass}
                   value={breBKey}
                   onChange={(event) => setBreBKey(event.target.value)}
+                  onBlur={() => setBreBKey((value) => normalizeBreBKey(value))}
+                  placeholder="@tullave, 3001234567 o tu@correo.com"
                   autoComplete="off"
                   autoCapitalize="none"
                   spellCheck={false}
                   required
                 />
               </Field>
+              <KeyHint value={breBKey} />
             </div>
             <button
               type="submit"
@@ -481,6 +603,12 @@ export function OfframpFlow({
             >
               {busy ? "Validando..." : "Validar llave"}
             </button>
+            {busy ? (
+              <WaitPanel
+                title="Estamos validando tu llave con el banco"
+                body="Consultamos el directorio Bre-B para confirmar que la cuenta está a tu nombre. Puede tardar hasta un minuto y medio: no cierres ni recargues esta página."
+              />
+            ) : null}
           </form>
         ) : null}
 
@@ -689,6 +817,118 @@ export function OfframpFlow({
           </button>
         </p>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * One of Bridge's pages inside the form. When the link is not one this site
+ * can frame, or the frame does not load for the person, the same page opens
+ * in a new tab as it always did.
+ */
+function BridgeStep({
+  title,
+  body,
+  frameTitle,
+  src,
+  link,
+  linkLabel,
+  help,
+  height,
+  sandbox,
+  allow,
+  onOpenTab,
+}: {
+  title: string;
+  body: string;
+  frameTitle: string;
+  src: string | null;
+  link: string;
+  linkLabel: string;
+  help: string;
+  height: number;
+  sandbox: string;
+  allow?: string;
+  onOpenTab: () => void;
+}) {
+  return (
+    <section className="mt-6">
+      <h3 className="text-base font-extrabold tracking-tight text-ink">{title}</h3>
+      <p className="mt-1 max-w-prose text-sm leading-relaxed text-muted">{body}</p>
+      {src ? (
+        <>
+          <iframe
+            src={src}
+            title={frameTitle}
+            allow={allow}
+            sandbox={sandbox}
+            style={{ height }}
+            className="mt-4 w-full rounded-2xl border border-line bg-white"
+          />
+          <p className="mt-3 text-sm text-muted">
+            {help}{" "}
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-brand underline"
+              onClick={onOpenTab}
+            >
+              Ábrelo en una pestaña nueva
+            </a>
+            .
+          </p>
+        </>
+      ) : (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={primaryClass + " mt-4"}
+          onClick={onOpenTab}
+        >
+          {linkLabel}
+        </a>
+      )}
+    </section>
+  );
+}
+
+function WaitPanel({ title, body }: { title: string; body: string }) {
+  return (
+    <div
+      className="mt-5 flex max-w-prose gap-3 rounded-2xl border border-brand/25 bg-tint p-4"
+      role="status"
+      aria-live="polite"
+    >
+      <span
+        className="mt-0.5 h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-brand/25 border-t-brand"
+        aria-hidden="true"
+      />
+      <div className="text-sm leading-relaxed">
+        <p className="font-semibold text-ink">{title}</p>
+        <p className="mt-1 text-muted">{body}</p>
+      </div>
+    </div>
+  );
+}
+
+function KeyHint({ value }: { value: string }) {
+  const trimmed = value.replace(/\s+/g, "");
+  const normalized = normalizeBreBKey(value);
+  return (
+    <div className="mt-2 text-xs leading-relaxed text-muted">
+      {trimmed && normalized !== trimmed ? (
+        <p className="font-semibold text-ink" aria-live="polite">
+          Se usará como {normalized}
+        </p>
+      ) : null}
+      <p>
+        Escríbela tal como aparece en tu banco. Celular: 3001234567.
+        Documento: solo números. Correo: tu@correo.com. Llave alfanumérica:
+        empieza con @, por ejemplo @juanperez (si la escribes sin @, la
+        agregamos).
+      </p>
     </div>
   );
 }
